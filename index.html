@@ -154,7 +154,7 @@ src="https://www.facebook.com/tr?id=905121178968619&ev=PageView&noscript=1"
         <div class="btn-area">
     <a href="https://line.me/ti/p/~你的ID" 
        class="line-btn" 
-       onclick="fbq('track', 'Contact');">
+       onclick="event.preventDefault(); fbq('track', 'Contact'); var url=this.href; setTimeout(function(){window.location.href=url}, 200);">
         <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg"> 點擊加賴約哥哥
     </a>
 </div>
