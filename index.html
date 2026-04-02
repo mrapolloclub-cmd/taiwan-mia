@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>附近配對成功</title>
     <style>
-        /* 1. 修复视口高度，确保在所有手机浏览器都不溢出 */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background-color: #7494c0; 
@@ -14,11 +13,10 @@
             display: flex; 
             justify-content: center; 
             height: 100vh; 
-            height: -webkit-fill-available; /* 兼容移动端浏览器工具栏 */
+            height: -webkit-fill-available; 
             overflow: hidden; 
         }
 
-        /* 2. 容器高度改为 100% 充满 body */
         .chat-container { 
             width: 100%; 
             max-width: 400px; 
@@ -42,7 +40,6 @@
             z-index: 10;
         }
         
-        /* 3. 内容区域增加 padding-bottom，防止最后一条消息被按钮盖住 */
         .chat-content { 
             padding: 15px 15px 100px 15px; 
             flex: 1; 
@@ -67,7 +64,6 @@
         .msg-row:nth-child(3) { animation-delay: 2.8s; } 
         .msg-row:nth-child(4) { animation-delay: 4.0s; }
 
-        /* 4. 关键：将按钮区域固定在容器底部 */
         .btn-area { 
             position: absolute; 
             bottom: 0; 
@@ -113,13 +109,13 @@
             <div class="msg-row">
                 <img src="avatar.jpg" class="avatar"> 
                 <div class="msg-bubble">約嗎？哥哥一夜情可以直接約見面的喔</div>
-                <div class="msg-info">下午2:30</div>
+                <div class="msg-info time-display"></div>
             </div>
 
             <div class="msg-row">
                 <img src="avatar.jpg" class="avatar">
                 <div class="msg-bubble">哥哥哪裡人幾歲啦？</div>
-                <div class="msg-info">下午2:30</div>
+                <div class="msg-info time-display"></div>
             </div>
 
             <div class="msg-row">
@@ -128,13 +124,13 @@
                     這麼巧，附近正好有妹妹配對
                     <img src="beauty.jpg" class="content-img"> 
                 </div>
-                <div class="msg-info">下午2:31</div>
+                <div class="msg-info time-display"></div>
             </div>
 
             <div class="msg-row">
                 <img src="avatar.jpg" class="avatar">
                 <div class="msg-bubble">添加以後主動打招呼了解喔 👇</div>
-                <div class="msg-info">下午2:31</div>
+                <div class="msg-info time-display"></div>
             </div>
         </div>
 
@@ -145,5 +141,29 @@
         </div>
     </div>
 
+    <script>
+        // 自动获取当前台湾/本地时间并格式化
+        function updateChatTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? '下午' : '上午';
+            
+            // 转换为12小时制显示
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            
+            const timeString = ampm + hours + ':' + minutes;
+            
+            // 填充到所有时间显示标签中
+            const timeElements = document.querySelectorAll('.time-display');
+            timeElements.forEach(el => {
+                el.innerText = timeString;
+            });
+        }
+
+        // 页面加载时立即执行
+        updateChatTime();
+    </script>
 </body>
 </html>
