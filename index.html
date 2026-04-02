@@ -5,36 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>附近配對成功</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #7494c0; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .chat-container { width: 95%; max-width: 400px; background: #84a2d4; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); overflow: hidden; display: flex; flex-direction: column; height: 90vh; }
-        
-        /* 顶部条：模拟Line风格 */
-        .header { background: #2c3e50; color: white; padding: 12px; text-align: center; font-weight: bold; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
-        
-        .chat-content { padding: 15px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        /* 1. 修复视口高度，确保在所有手机浏览器都不溢出 */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #7494c0; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            justify-content: center; 
+            height: 100vh; 
+            height: -webkit-fill-available; /* 兼容移动端浏览器工具栏 */
+            overflow: hidden; 
+        }
 
-        /* 消息行布局 */
-        .msg-row { display: flex; align-items: flex-start; animation: fadeIn 0.5s ease forwards; opacity: 0; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 8px; border: 1px solid rgba(255,255,255,0.5); }
+        /* 2. 容器高度改为 100% 充满 body */
+        .chat-container { 
+            width: 100%; 
+            max-width: 400px; 
+            background: #84a2d4; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            position: relative; 
+        }
         
-        /* 气泡样式 */
+        .header { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 12px; 
+            text-align: center; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 10;
+        }
+        
+        /* 3. 内容区域增加 padding-bottom，防止最后一条消息被按钮盖住 */
+        .chat-content { 
+            padding: 15px 15px 100px 15px; 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        .msg-row { display: flex; align-items: flex-start; animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 8px; border: 1px solid rgba(255,255,255,0.5); flex-shrink: 0; }
+        
         .msg-bubble { max-width: 70%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4; position: relative; background: white; color: #333; border-top-left-radius: 2px; }
         
-        /* 模拟已读和时间 */
-        .msg-info { align-self: flex-end; font-size: 10px; color: white; margin-left: 5px; margin-bottom: 2px; line-height: 1; }
+        .msg-info { align-self: flex-end; font-size: 10px; color: white; margin-left: 5px; margin-bottom: 2px; line-height: 1; white-space: nowrap; }
 
-        /* 插入图片样式 */
-        .content-img { max-width: 100%; border-radius: 10px; margin-top: 5px; border: 2px solid white; }
+        .content-img { max-width: 100%; border-radius: 10px; margin-top: 5px; border: 2px solid white; display: block; }
 
-        /* 动画延迟：模拟打字速度 */
         .msg-row:nth-child(1) { animation-delay: 0.5s; }
         .msg-row:nth-child(2) { animation-delay: 1.5s; }
-        .msg-row:nth-child(3) { animation-delay: 2.8s; } /* 这里可以放图 */
+        .msg-row:nth-child(3) { animation-delay: 2.8s; } 
         .msg-row:nth-child(4) { animation-delay: 4.0s; }
 
-        /* 按钮区 */
-        .btn-area { padding: 15px; text-align: center; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-        .line-btn { background: #00b900; color: white; text-decoration: none; width: 100%; padding: 15px 0; border-radius: 50px; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; }
+        /* 4. 关键：将按钮区域固定在容器底部 */
+        .btn-area { 
+            position: absolute; 
+            bottom: 0; 
+            width: 100%; 
+            padding: 15px; 
+            text-align: center; 
+            background: rgba(255, 255, 255, 0.95); 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); 
+            box-sizing: border-box; 
+            z-index: 20;
+        }
+
+        .line-btn { 
+            background: #00b900; 
+            color: white; 
+            text-decoration: none; 
+            width: 100%; 
+            padding: 15px 0; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            animation: pulse 2s infinite; 
+        }
         .line-btn img { width: 24px; margin-right: 8px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -52,7 +111,8 @@
         
         <div class="chat-content">
             <div class="msg-row">
-                <img src="avatar.jpg" class="avatar"> <div class="msg-bubble">約嗎？哥哥一夜情可以直接約見面的喔</div>
+                <img src="avatar.jpg" class="avatar"> 
+                <div class="msg-bubble">約嗎？哥哥一夜情可以直接約見面的喔</div>
                 <div class="msg-info">下午2:30</div>
             </div>
 
@@ -66,7 +126,8 @@
                 <img src="avatar.jpg" class="avatar">
                 <div class="msg-bubble">
                     這麼巧，附近正好有妹妹配對
-                    <img src="beauty.jpg" class="content-img"> </div>
+                    <img src="beauty.jpg" class="content-img"> 
+                </div>
                 <div class="msg-info">下午2:31</div>
             </div>
 
