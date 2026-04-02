@@ -4,42 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>附近配對成功</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #7494c0; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .chat-container { width: 95%; max-width: 400px; background: #84a2d4; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); overflow: hidden; display: flex; flex-direction: column; height: 90vh; }
-        
-        /* 顶部条：模拟Line风格 */
-        .header { background: #2c3e50; color: white; padding: 12px; text-align: center; font-weight: bold; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
-        
-        .chat-content { padding: 15px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+   <style>
+    /* 基础重置 */
+    * { box-sizing: border-box; }
+    
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        background-color: #7494c0; 
+        margin: 0; 
+        padding: 0; 
+        display: flex; 
+        flex-direction: column;
+        /* 修复手机端100vh问题 */
+        height: 100vh; 
+        height: -webkit-fill-available; 
+        overflow: hidden; 
+    }
 
-        /* 消息行布局 */
-        .msg-row { display: flex; align-items: flex-start; animation: fadeIn 0.5s ease forwards; opacity: 0; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 8px; border: 1px solid rgba(255,255,255,0.5); }
-        
-        /* 气泡样式 */
-        .msg-bubble { max-width: 70%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4; position: relative; background: white; color: #333; border-top-left-radius: 2px; }
-        
-        /* 模拟已读和时间 */
-        .msg-info { align-self: flex-end; font-size: 10px; color: white; margin-left: 5px; margin-bottom: 2px; line-height: 1; }
+    html {
+        height: -webkit-fill-available;
+    }
 
-        /* 插入图片样式 */
-        .content-img { max-width: 100%; border-radius: 10px; margin-top: 5px; border: 2px solid white; }
+    /* 容器调整：高度设为100%，去掉固定高度 */
+    .chat-container { 
+        width: 100%; 
+        max-width: 500px; 
+        background: #84a2d4; 
+        display: flex; 
+        flex-direction: column; 
+        height: 100%; 
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .header { 
+        background: #2c3e50; 
+        color: white; 
+        padding: 15px; 
+        text-align: center; 
+        font-weight: bold; 
+        flex-shrink: 0; /* 确保头部不被压缩 */
+    }
+    
+    /* 聊天区域：自动撑开，并留出底部按钮的空位 */
+    .chat-content { 
+        padding: 15px; 
+        flex: 1; 
+        overflow-y: auto; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 15px; 
+        -webkit-overflow-scrolling: touch; /* 增加iOS滑动流畅度 */
+        padding-bottom: 100px; /* 重要：防止内容被底部按钮挡住 */
+    }
 
-        /* 动画延迟：模拟打字速度 */
-        .msg-row:nth-child(1) { animation-delay: 0.5s; }
-        .msg-row:nth-child(2) { animation-delay: 1.5s; }
-        .msg-row:nth-child(3) { animation-delay: 2.8s; } /* 这里可以放图 */
-        .msg-row:nth-child(4) { animation-delay: 4.0s; }
+    .msg-row { display: flex; align-items: flex-start; animation: fadeIn 0.5s ease forwards; opacity: 0; }
+    .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 8px; flex-shrink: 0; }
+    .msg-bubble { max-width: 75%; padding: 12px; border-radius: 18px; font-size: 16px; background: white; border-top-left-radius: 2px; position: relative; }
+    .content-img { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
 
-        /* 按钮区 */
-        .btn-area { padding: 15px; text-align: center; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-        .line-btn { background: #00b900; color: white; text-decoration: none; width: 100%; padding: 15px 0; border-radius: 50px; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; }
-        .line-btn img { width: 24px; margin-right: 8px; }
+    /* 底部按钮区：固定在底部，确保可见 */
+    .btn-area { 
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 15px; 
+        background: rgba(255, 255, 255, 0.9); 
+        backdrop-filter: blur(10px); /* 磨砂效果增加高级感 */
+        border-top: 1px solid #ddd;
+    }
+    
+    .line-btn { 
+        background: #00b900; 
+        color: white; 
+        text-decoration: none; 
+        width: 100%; 
+        padding: 15px 0; 
+        border-radius: 50px; 
+        font-weight: bold; 
+        font-size: 1.2rem; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        animation: pulse 2s infinite; 
+        box-shadow: 0 4px 15px rgba(0,185,0,0.3);
+    }
+    .line-btn img { width: 26px; margin-right: 10px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-    </style>
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+</style>
 </head>
 <body>
 
